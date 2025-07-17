@@ -13,7 +13,6 @@ resource "aws_dynamodb_table" "user_table" {
     Name        = "user-table"
     Environment = "dev"
   }
-}
 
 lifecycle {
     prevent_destroy = true
