@@ -1,20 +1,19 @@
 provider "aws" {
-  region = "us-east-1" # change to your preferred region
+  region = "ap-south-1" # Mumbai region
 }
 
-resource "aws_dynamodb_table" "dynamo_table" {
-  name         = var.table_name
-  billing_mode = "PAY_PER_REQUEST" # On-demand billing
-
-  hash_key     = "id"
+resource "aws_dynamodb_table" "example" {
+  name           = "SampleTable"
+  billing_mode   = "PAY_PER_REQUEST" # No need to specify read/write capacity
+  hash_key       = "UserId"
 
   attribute {
-    name = "id"
-    type = "S"
+    name = "UserId"
+    type = "S"  # S = String, N = Number, B = Binary
   }
 
   tags = {
-    Name        = var.table_name
-    Environment = "dev"
+    Environment = "Dev"
+    Team        = "Analytics"
   }
 }
