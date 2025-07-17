@@ -2,7 +2,7 @@ provider "aws" {
   region = "us-east-1" # change to your preferred region
 }
 
-resource "aws_dynamodb_table" "example_table" {
+resource "aws_dynamodb_table" "dynamo_table" {
   name         = var.table_name
   billing_mode = "PAY_PER_REQUEST" # On-demand billing
 
