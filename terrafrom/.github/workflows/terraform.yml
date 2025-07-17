@@ -1,19 +1,17 @@
-name: Deploy IAM Role with Terraform
+name: Terraform Deployment
 
 on:
   push:
     branches:
-      - main
-    on:
-      workflow_dispatch:
+      - main  # or your chosen branch
+  workflow_dispatch:  # enables manual run
 
 jobs:
   terraform:
-    name: Terraform Apply
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v3
 
       - name: Setup Terraform
@@ -21,12 +19,15 @@ jobs:
 
       - name: Terraform Init
         run: terraform init
+        working-directory: terraform
 
       - name: Terraform Plan
         run: terraform plan
+        working-directory: terraform
 
       - name: Terraform Apply
         run: terraform apply -auto-approve
+        working-directory: terraform
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
