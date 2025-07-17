@@ -14,3 +14,13 @@ resource "aws_dynamodb_table" "user_table" {
     Environment = "dev"
   }
 }
+
+lifecycle {
+    prevent_destroy = true
+    ignore_changes = [
+      read_capacity,
+      write_capacity,
+      tags
+    ]
+  }
+}
