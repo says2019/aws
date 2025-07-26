@@ -29,8 +29,8 @@ jobs:
       - name: list files
         run: |
               echo "Current directory: $(pwd)"
-              ls -al aws/
-              ls -al aws/lambda/
+              ls -al /home/runner/work/aws/aws/
+              ls -al /home/runner/work/aws/aws/lambda/
 
       - name: Package Lambda functions
         run: |
