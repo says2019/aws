@@ -29,16 +29,16 @@ jobs:
       - name: list files
         run: |
               echo "Current directory: $(pwd)"
-              ls -al Aws/
-              ls -al Aws/lambda/
+              ls -al aws/
+              ls -al aws/lambda/
 
       - name: Package Lambda functions
         run: |
-          mkdir -p Aws/terraform/lambda/packages
-          for file in Aws/lambda/*.py; do
+          mkdir -p aws/terraform/lambda/packages
+          for file in aws/lambda/*.py; do
             name=$(basename "$file" .py)
             echo "Zipping $file -> $name.zip"
-            zip -j "Aws/terraform/lambda/packages/${name}.zip" "$file"
+            zip -j "aws/terraform/lambda/packages/${name}.zip" "$file"
           done
 
       - name: List packaged zips
