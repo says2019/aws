@@ -1,48 +1,25 @@
-provider "aws" {
-  region = "ap-south-1"  # Update as needed
+resource "aws_iam_role" "lambda_exec_role" {
+  name = "lambda_exec_role"
+  assume_role_policy = data.aws_iam_policy_document.lambda_assume.json
 }
 
-variable "lambda_functions" {
-  type = map(string)
-  default = {
-    "notify-new-record"         = "notify-new-record"
-    "purchase-capacity-block"   = "purchase-capacity-block"
-    "return-task-token"         = "return-task-token"
-    "send-approval-email"       = "send-approval-email"
-    "set-request-status"        = "set-request-status"
-    "submit-approval-request"   = "submit-approval-request"
+data "aws_iam_policy_document" "lambda_assume" {
+  statement {
+    actions = ["sts:AssumeRole"]
+    principals {
+      type        = "Service"
+      identifiers = ["lambda.amazonaws.com"]
+    }
   }
 }
 
-resource "aws_iam_role" "lambda_exec" {
-  name = "lambda_execution_role"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Action = "sts:AssumeRole"
-      Effect = "Allow"
-      Principal = {
-        Service = "lambda.amazonaws.com"
-      }
-    }]
-  })
-}
-
-resource "aws_iam_role_policy_attachment" "lambda_policy_attach" {
-  role       = aws_iam_role.lambda_exec.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
-}
-
-resource "aws_lambda_function" "functions" {
-  for_each = var.lambda_functions
+resource "aws_lambda_function" "lambda_functions" {
+  for_each = toset(var.lambda_names)
 
   function_name = each.key
-  filename      = "${path.module}/packages/${each.value}.zip"
-  source_code_hash = filebase64sha256("${path.module}/packages/${each.value}.zip")
-
-  role    = aws_iam_role.lambda_exec.arn
-  handler = "${each.value}.lambda_handler"
-  runtime = "python3.12"
-  timeout = 10
+  filename      = "${path.module}/packages/${each.key}.zip"
+  handler       = "${replace(each.key, "_", "-")}.handler"
+  runtime       = "python3.9"
+  role          = aws_iam_role.lambda_exec_role.arn
+  source_code_hash = filebase64sha256("${path.module}/packages/${each.key}.zip")
 }
