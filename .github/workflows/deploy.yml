@@ -27,12 +27,11 @@ jobs:
 
     - name: Zip Lambda Functions
       run: |
-        mkdir -p packages
-        for file in ../../src/lambda/*.py; do
-        name=$(basename "$file" .py)
-        zip -j "packages/$name.zip" "$file"
+        mkdir -p terraform/lambda/packages
+        for file in Aws/src/lambda/*.py; do
+          name=$(basename "$file" .py)
+          zip -j "terraform/lambda/packages/$name.zip" "$file"
         done
-
     
 
     - name: Configure Aws credentials
