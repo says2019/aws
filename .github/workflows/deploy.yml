@@ -43,13 +43,13 @@ jobs:
         terraform_version: 1.8.5
 
     - name: Terraform Init
-      working-directory: src/terraform/lambda
+      working-directory: terraform/lambda
       run: terraform init
 
     - name: Terraform Plan
-      working-directory: src/terraform/lambda
+      working-directory: terraform/lambda
       run: terraform plan
 
     - name: Terraform Apply
-      working-directory: src/terraform/lambda
+      working-directory: terraform/lambda
       run: terraform apply -auto-approve
