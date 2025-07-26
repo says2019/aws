@@ -1,4 +1,4 @@
-name: Deploy Lambda Functions
+name: Deploy lambda Functions
 
 on:
   push:
@@ -31,7 +31,7 @@ jobs:
       - name: Install zip utility
         run: sudo apt-get install zip -y
 
-      - name: Package Lambda functions
+      - name: Package lambda functions
         run: |
          mkdir -p Aws/terraform/lambda/packages
          for file in Aws/lambda/*.py; do
