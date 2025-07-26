@@ -2,10 +2,6 @@ name: Deploy Lambdas
 
 on:
   push:
-    paths:
-      - 'Aws/lambda/**'
-      - '.github/workflows/deploy.yml'
-      - 'Aws/terraform/**'
     branches:
       - dev
 
@@ -28,7 +24,7 @@ jobs:
 
     - name: Zip Lambda Functions
       run: |
-         cd Aws/src/lambda
+         cd src/lambda
          mkdir -p ../../terraform/lambda/packages
          for file in *.py; do
            zip "../../terraform/lambda/packages/${file%.py}.zip" "$file"
