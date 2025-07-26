@@ -46,6 +46,11 @@ jobs:
       working-directory: terraform/lambda
       run: terraform init
 
+    - name: Debug Package Folder
+      run: ls -l terraform/lambda/packages
+
+
+
     - name: Terraform Plan
       working-directory: terraform/lambda
       run: terraform plan
