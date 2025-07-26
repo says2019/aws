@@ -33,11 +33,11 @@ jobs:
 
       - name: Package Lambda functions
         run: |
-          mkdir -p Lib/terraform/lambda/packages
-          for dir in Lib/lambdas/*; do
-            name=$(basename "$dir")
-            zip -j "Lib/terraform/lambda/packages/${name}.zip" "$dir/lambda.py"
-          done
+         mkdir -p Lib/terraform/lambda/packages
+         for file in Lib/lambda/*.py; do
+         name=$(basename "$file" .py)
+         zip -j "Lib/terraform/lambda/packages/${name}.zip" "$file"
+         done
 
       - name: Terraform Init
         working-directory: Lib/terraform/lambda
