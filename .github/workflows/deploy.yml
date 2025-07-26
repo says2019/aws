@@ -54,7 +54,7 @@ jobs:
       run: terraform init
 
     - name: Debug Package Folder
-      run: ls -l /../../packages
+      run: ls -l terraform/lambda/packages
 
 
 
