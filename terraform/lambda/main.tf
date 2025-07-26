@@ -1,25 +1,27 @@
-variable "lambda_functions" {
-  type = map(object({
-    source_path = string
-    handler     = string
-    runtime     = string
-    role_arn    = string
-  }))
+#this is my lamdfa                    hhhhhhhhhhhhhhh
+
+resource "aws_iam_role" "lambda_exec_role" {
+  name = "lambda_exec_role"
+  assume_role_policy = data.aws_iam_policy_document.lambda_assume.json
 }
 
-resource "aws_lambda_function" "functions" {
-  for_each = var.lambda_functions
+data "aws_iam_policy_document" "lambda_assume" {
+  statement {
+    actions = ["sts:AssumeRole"]
+    principals {
+      type        = "Service"
+      identifiers = ["lambda.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_lambda_function" "lambda_functions" {
+  for_each = toset(var.lambda_names)
 
   function_name = each.key
   filename      = "${path.module}/packages/${each.key}.zip"
-  handler       = each.value.handler
-  runtime       = each.value.runtime
-  role          = each.value.role_arn
+  handler       = "${replace(each.key, "_", "-")}.handler"
+  runtime       = "python3.9"
+  role          = aws_iam_role.lambda_exec_role.arn
   source_code_hash = filebase64sha256("${path.module}/packages/${each.key}.zip")
-
-  environment {
-    variables = {
-      ENV = "dev"
-    }
-  }
 }

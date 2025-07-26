@@ -1,6 +1,6 @@
 
 resource "aws_dynamodb_table" "user_table" {
-  name           = "user1"
+  name           = "Capacity2"
   billing_mode   = "PAY_PER_REQUEST"
   hash_key       = "user_id"
 
@@ -10,7 +10,7 @@ resource "aws_dynamodb_table" "user_table" {
   }
 
   tags = {
-    Name        = "user-table1"
+    Name        = "Capacity2"
     Environment = "dev"
   }
 

@@ -1,8 +1,12 @@
-name: Deploy Lambda Functions
+name: Deploy Lambdas
 
 on:
   push:
-    branches: [main]
+    paths:
+      - 'src/lambda/**'
+      - 'terraform/**'
+    branches:
+      - dev
 
 permissions:
   id-token: write
@@ -13,40 +17,51 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Checkout
+      uses: actions/checkout@v4
 
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: 1.5.0
+    - name: Zip Lambda Functions
+      working-directory: terraform/lambda
+      run: |
+        mkdir -p packages
+        for file in ../../src/lambda/*.py; do
+        name=$(basename "$file" .py)
+        zip_name=$(echo "$name" | tr '-' '_')  # <-- match your each.key format
+        cp "$file" "./${zip_name}.py"
+        zip -j "packages/${zip_name}.zip" "${zip_name}.py"
+        rm -f "${zip_name}.py"
+        done
 
-      - name: Install zip utility
-        run: sudo apt-get install zip -y
+    - name: Configure Aws credentials
+      uses: Aws-actions/configure-Aws-credentials@v3
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        Aws-region: us-east-1
 
-      - name: Package Lambda functions
-        run: |
-          mkdir -p Lib/terraform/lambda/packages
-          for dir in Lib/lambdas/*; do
-            name=$(basename "$dir")
-            zip -j "Lib/terraform/lambda/packages/${name}.zip" "$dir/lambda.py"
-          done
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: 1.8.5
 
-      - name: Terraform Init
-        working-directory: Lib/terraform/lambda
-        run: terraform init
+    - name: Terraform Init
+      working-directory: terraform/lambda
+      run: terraform init
 
-      - name: Terraform Plan
-        working-directory: Lib/terraform/lambda
-        run: terraform plan -var-file="terraform.tfvars"
+    - name: Debug Package Folder
+      run: ls -l terraform/lambda/packages
 
-      - name: Terraform Apply
-        working-directory: Lib/terraform/lambda
-        run: terraform apply -auto-approve -var-file="terraform.tfvars"
+
+
+    - name: Terraform Plan
+      working-directory: terraform/lambda
+      run: terraform plan
+
+    - name: Terraform Apply
+      working-directory: terraform/lambda
+      run: terraform apply -auto-approve
