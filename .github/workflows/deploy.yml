@@ -26,8 +26,7 @@ jobs:
       - name: Install zip utility
         run: sudo apt-get update && sudo apt-get install -y zip
 
-      - name: List file
-        Debug: list files
+      - name: list files
         run: |
               echo "Current directory: $(pwd)"
               ls -al Aws/
