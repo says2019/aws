@@ -17,9 +17,9 @@ resource "aws_lambda_function" "lambda_functions" {
   for_each = toset(var.lambda_names)
 
   function_name = each.key
-  filename      = "${path.module}/packages/${each.key}.zip"
+  filename      = "${path.module}/terraform/lambda/packages/${each.key}.zip"
   handler       = "${replace(each.key, "_", "-")}.handler"
   runtime       = "python3.9"
   role          = aws_iam_role.lambda_exec_role.arn
-  source_code_hash = filebase64sha256("${path.module}/packages/${each.key}.zip")
+  source_code_hash = filebase64sha256("${path.module}/terraform/lambda/packages/${each.key}.zip")
 }
