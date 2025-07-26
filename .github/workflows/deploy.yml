@@ -33,20 +33,20 @@ jobs:
 
       - name: Package Lambda functions
         run: |
-         mkdir -p Lib/terraform/lambda/packages
-         for file in Lib/lambda/*.py; do
+         mkdir -p Aws/terraform/lambda/packages
+         for file in Aws/lambda/*.py; do
          name=$(basename "$file" .py)
-         zip -j "Lib/terraform/lambda/packages/${name}.zip" "$file"
+         zip -j "Aws/terraform/lambda/packages/${name}.zip" "$file"
          done
 
       - name: Terraform Init
-        working-directory: Lib/terraform/lambda
+        working-directory: Aws/terraform/lambda
         run: terraform init
 
       - name: Terraform Plan
-        working-directory: Lib/terraform/lambda
+        working-directory: Aws/terraform/lambda
         run: terraform plan -var-file="terraform.tfvars"
 
       - name: Terraform Apply
-        working-directory: Lib/terraform/lambda
+        working-directory: Aws/terraform/lambda
         run: terraform apply -auto-approve -var-file="terraform.tfvars"
