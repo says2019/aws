@@ -2,6 +2,9 @@ name: Deploy Lambdas
 
 on:
   push:
+    paths:
+      - 'src/lambda/**'
+      - 'terraform/**'
     branches:
       - dev
 
@@ -24,11 +27,12 @@ jobs:
 
     - name: Zip Lambda Functions
       run: |
-         cd src/lambda
-         mkdir -p ../../terraform/lambda/packages
-         for file in *.py; do
-           zip "../../terraform/lambda/packages/${file%.py}.zip" "$file"
-         done
+        mkdir -p terraform/lambda/packages
+        for file in src/lambda/*.py; do
+          name=$(basename "$file" .py)
+          zip -j "terraform/lambda/packages/$name.zip" "$file"
+        done
+    
 
     - name: Configure Aws credentials
       uses: Aws-actions/configure-Aws-credentials@v3
