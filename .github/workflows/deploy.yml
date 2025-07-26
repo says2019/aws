@@ -38,13 +38,13 @@ jobs:
         Aws-region: ap-south-1
 
     - name: Terraform Init
-      working-directory: Aws/terraform
+      working-directory: terraform
       run: terraform init
 
     - name: Terraform Plan
-      working-directory: Aws/terraform
+      working-directory: terraform
       run: terraform plan
 
     - name: Terraform Apply
-      working-directory: Aws/terraform
+      working-directory: terraform
       run: terraform apply -auto-approve
