@@ -28,10 +28,10 @@ jobs:
 
     - name: Zip Lambda Functions
       run: |
-        mkdir -p Aws/terraform/packages
-        for f in Aws/lambda/*.py; do
+        mkdir -p aws/terraform/packages
+        for f in aws/lambda/*.py; do
           name=$(basename $f .py)
-          zip -j Aws/terraform/packages/$name.zip $f
+          zip -j aws/terraform/packages/$name.zip $f
         done
 
     - name: Configure Aws credentials
