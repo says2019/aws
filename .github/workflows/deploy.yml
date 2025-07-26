@@ -26,23 +26,23 @@ jobs:
       - name: Install zip utility
         run: sudo apt-get update && sudo apt-get install -y zip
 
-      - name: list files
+      - name: Debug - List files
         run: |
-              echo "Current directory: $(pwd)"
-              ls -al /home/runner/work/aws/aws/
-              ls -al /home/runner/work/aws/aws/lambda/
+          echo "Current directory: $(pwd)"
+          ls -al
+          ls -al lambda/
 
       - name: Package Lambda functions
         run: |
-          mkdir -p aws/terraform/lambda/packages
-          for file in aws/lambda/*.py; do
+          mkdir -p terraform/lambda/packages
+          for file in lambda/*.py; do
             name=$(basename "$file" .py)
             echo "Zipping $file -> $name.zip"
-            zip -j "aws/terraform/lambda/packages/${name}.zip" "$file"
+            zip -j "terraform/lambda/packages/${name}.zip" "$file"
           done
 
-      - name: List packaged zips
-        run: ls -al Aws/terraform/lambda/packages
+      - name: List zipped packages
+        run: ls -al terraform/lambda/packages
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
@@ -50,13 +50,13 @@ jobs:
           terraform_version: 1.5.0
 
       - name: Terraform Init
-        working-directory: Aws/terraform/lambda
+        working-directory: terraform/lambda
         run: terraform init
 
       - name: Terraform Plan
-        working-directory: Aws/terraform/lambda
+        working-directory: terraform/lambda
         run: terraform plan -var-file="terraform.tfvars"
 
       - name: Terraform Apply
-        working-directory: Aws/terraform/lambda
+        working-directory: terraform/lambda
         run: terraform apply -auto-approve -var-file="terraform.tfvars"
