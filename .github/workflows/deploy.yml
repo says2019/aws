@@ -1,43 +1,47 @@
-name: Deploy lambda Functions
+name: Deploy Lambda Functions via Terraform
 
 on:
   push:
-    branches:
-      - dev
-permissions:
-  id-token: write
-  contents: read
+    branches: [dev]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
+    env:
+      AWS_REGION: us-east-1
+      AWS_DEFAULT_REGION: us-east-1
+
     steps:
-      - name: Checkout code
+      - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Configure AWS credentials
+      - name: Set up AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Install zip utility
+        run: sudo apt-get update && sudo apt-get install -y zip
+
+      - name: Package Lambda functions
+        run: |
+          mkdir -p Aws/terraform/lambda/packages
+          for file in Aws/lambda/*.py; do
+            name=$(basename "$file" .py)
+            echo "Zipping $file -> $name.zip"
+            zip -j "Aws/terraform/lambda/packages/${name}.zip" "$file"
+          done
+
+      - name: List packaged zips
+        run: ls -al Aws/terraform/lambda/packages
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: 1.5.0
-
-      - name: Install zip utility
-        run: sudo apt-get install zip -y
-
-      - name: Package lambda functions
-        run: |
-         mkdir -p Aws/terraform/lambda/packages
-         for file in Aws/lambda/*.py; do
-         name=$(basename "$file" .py)
-         zip -j "Aws/terraform/lambda/packages/${name}.zip" "$file"
-         done
 
       - name: Terraform Init
         working-directory: Aws/terraform/lambda
