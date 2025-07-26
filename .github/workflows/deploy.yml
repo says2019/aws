@@ -26,13 +26,16 @@ jobs:
         python-version: '3.12'
 
     - name: Zip Lambda Functions
+      working-directory: terraform/lambda
       run: |
-        mkdir -p terraform/lambda/packages
-        for file in src/lambda/*.py; do
-          name=$(basename "$file" .py)
-          zip -j "terraform/lambda/packages/$name.zip" "$file"
+        mkdir -p packages
+        for file in ../../src/lambda/*.py; do
+        name=$(basename "$file" .py)
+        zip_name=$(echo "$name" | tr '-' '_')  # <-- match your each.key format
+        cp "$file" "./${zip_name}.py"
+        zip -j "packages/${zip_name}.zip" "${zip_name}.py"
+        rm -f "${zip_name}.py"
         done
-    
 
     - name: Configure Aws credentials
       uses: Aws-actions/configure-Aws-credentials@v3
@@ -51,7 +54,7 @@ jobs:
       run: terraform init
 
     - name: Debug Package Folder
-      run: ls -l terraform/lambda/packages
+      run: ls -l /../../packages
 
 
 
