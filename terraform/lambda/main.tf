@@ -23,5 +23,5 @@ resource "aws_lambda_function" "lambda_functions" {
   handler       = "${replace(each.key, "_", "-")}.handler"
   runtime       = "python3.9"
   role          = aws_iam_role.lambda_exec_role.arn
-  source_code_hash = filebase64sha256("$terraform/lambda/packages/${each.key}.zip")
+  source_code_hash = filebase64sha256("terraform/lambda/packages/${each.key}.zip")
 }
