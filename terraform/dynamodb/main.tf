@@ -1,9 +1,6 @@
-provider "aws" {
-  region = "us-east-1"  # or your preferred region
-}
 
 resource "aws_dynamodb_table" "user_table" {
-  name           = "user"
+  name           = "user1"
   billing_mode   = "PAY_PER_REQUEST"
   hash_key       = "user_id"
 
@@ -13,7 +10,16 @@ resource "aws_dynamodb_table" "user_table" {
   }
 
   tags = {
-    Name        = "user-table"
+    Name        = "user-table1"
     Environment = "dev"
+  }
+
+lifecycle {
+    prevent_destroy = true
+    ignore_changes = [
+      read_capacity,
+      write_capacity,
+      tags
+    ]
   }
 }
