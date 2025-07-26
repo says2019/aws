@@ -1,62 +1,54 @@
-name: Deploy Lambda Functions via Terraform
+name: Deploy Lambdas
 
 on:
   push:
-    branches: [dev]
+    paths:
+      - 'Aws/lambda/**'
+      - '.github/workflows/deploy.yml'
+      - 'Aws/terraform/**'
+    branches:
+      - main
+
+permissions:
+  id-token: write
+  contents: read
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
-    env:
-      AWS_REGION: us-east-1
-      AWS_DEFAULT_REGION: us-east-1
-
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
+    - name: Checkout
+      uses: actions/checkout@v4
 
-      - name: Set up AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v2
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
 
-      - name: Install zip utility
-        run: sudo apt-get update && sudo apt-get install -y zip
+    - name: Zip Lambda Functions
+      run: |
+        mkdir -p Aws/terraform/packages
+        for f in Aws/lambda/*.py; do
+          name=$(basename $f .py)
+          zip -j Aws/terraform/packages/$name.zip $f
+        done
 
-      - name: Debug - List files
-        run: |
-          echo "Current directory: $(pwd)"
-          ls -al
-          ls -al lambda/
+    - name: Configure Aws credentials
+      uses: Aws-actions/configure-Aws-credentials@v3
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        Aws-region: ap-south-1
 
-      - name: Package Lambda functions
-        run: |
-          mkdir -p terraform/lambda/packages
-          for file in lambda/*.py; do
-            name=$(basename "$file" .py)
-            echo "Zipping $file -> $name.zip"
-            zip -j "terraform/lambda/packages/${name}.zip" "$file"
-          done
+    - name: Terraform Init
+      working-directory: Aws/terraform
+      run: terraform init
 
-      - name: List zipped packages
-        run: ls -al terraform/lambda/packages
+    - name: Terraform Plan
+      working-directory: Aws/terraform
+      run: terraform plan
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_version: 1.5.0
-
-      - name: Terraform Init
-        working-directory: terraform/lambda
-        run: terraform init
-
-      - name: Terraform Plan
-        working-directory: terraform/lambda
-        run: terraform plan -var-file="terraform.tfvars"
-
-      - name: Terraform Apply
-        working-directory: terraform/lambda
-        run: terraform apply -auto-approve -var-file="terraform.tfvars"
+    - name: Terraform Apply
+      working-directory: Aws/terraform
+      run: terraform apply -auto-approve
