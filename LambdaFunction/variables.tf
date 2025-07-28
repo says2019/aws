@@ -1,4 +1,4 @@
-variable "lambda_names" {
+variable "lambda_configs" {
   type = list(string)
   default = [
     "notify_new_record",
