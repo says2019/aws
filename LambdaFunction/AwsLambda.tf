@@ -14,10 +14,7 @@ resource "aws_s3_bucket" "cqpocsbucket" {
   }
 }
 
-resource "aws_s3_bucket_acl" "private_acl" {
-  bucket = aws_s3_bucket.cqpocsbucket.id
-  acl    = "private"
-}
+
 
 # Upload zip file to S3
 resource "aws_s3_object" "lambda_zip" {
@@ -33,6 +30,10 @@ resource "aws_s3_object" "lambda_zip" {
 resource "aws_iam_role" "lambda_role" {
   name               = "lambda_role"
   assume_role_policy = file("LambdaFunction/lambda_assume_role_policy.json")
+  lifecycle {
+    prevent_destroy = true  # avoid accidental deletion
+    ignore_changes  = all   # skip changes if role already exists
+  }
 }
 
 # IAM Policy for Lambda
