@@ -1,0 +1,65 @@
+name: Deploy Lambdas
+
+on:
+  push:
+    paths:
+      - 'src/lambda/**'
+      - 'terraform/**'
+    branches:
+      - dev
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Zip Lambda Functions
+      working-directory: terraform/lambda
+      run: |
+        mkdir -p packages
+        for file in ../../src/lambda/*.py; do
+        name=$(basename "$file" .py)
+        zip_name=$(echo "$name" | tr '-' '_')  # <-- match your each.key format
+        cp "$file" "./${zip_name}.py"
+        zip -j "packages/${zip_name}.zip" "${zip_name}.py"
+        rm -f "${zip_name}.py"
+        done
+
+    - name: Configure Aws credentials
+      uses: Aws-actions/configure-Aws-credentials@v3
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        Aws-region: us-east-1
+
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: 1.8.5
+
+    - name: Terraform Init
+      working-directory: terraform/lambda
+      run: terraform init
+
+    - name: Debug Package Folder
+      run: ls -l terraform/lambda/packages
+
+    - name: Terraform Plan
+      working-directory: terraform/lambda
+      run: terraform plan
+
+    - name: Terraform Apply
+      working-directory: terraform/lambda
+      run: terraform apply -auto-approve
