@@ -5,7 +5,7 @@ variable "pythonfunctionapparn" {
 
 # Step Function Role
 resource "aws_iam_role" "step_function_role" {
-  name = "cloudquickpocsstepfunction-role"
+  name = "step-function-role"
 
   assume_role_policy = <<-EOF
   {
@@ -26,7 +26,7 @@ resource "aws_iam_role" "step_function_role" {
 
 # Step Function IAM Policy
 resource "aws_iam_role_policy" "step_function_policy" {
-  name = "cqcdstepfunctionrole-policy"
+  name = "step-function-policy"
   role = aws_iam_role.step_function_role.id
 
   policy = <<-EOF
@@ -47,7 +47,7 @@ resource "aws_iam_role_policy" "step_function_policy" {
 
 # Step Function Definition
 resource "aws_sfn_state_machine" "sfn_state_machine" {
-  name     = "cloudquickpocsstepfunction"
+  name     = "work_flow"
   role_arn = aws_iam_role.step_function_role.arn
 
   definition = <<-EOF

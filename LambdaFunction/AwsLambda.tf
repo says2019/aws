@@ -46,6 +46,7 @@ resource "aws_iam_role_policy" "lambda_policy" {
 
 # Lambda Function
 resource "aws_lambda_function" "test_lambda" {
+  for_each = toset(var.lambda_names)
   function_name    = "notify_new_record"
   s3_bucket        = aws_s3_bucket.cqpocsbucket.id
   s3_key           = aws_s3_object.lambda_zip.key
