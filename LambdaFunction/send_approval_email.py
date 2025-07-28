@@ -4,7 +4,7 @@ import boto3
 ses = boto3.client('ses')
 
 
-def lambda_handler(event, context):
+def handler(event, context):
     email = event['email']
     request_id = event['request_id']
 

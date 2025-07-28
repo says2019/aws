@@ -1,6 +1,6 @@
 import json
 
-def lambda_handler(event, context):
+def handler(event, context):
     print("New record received:", json.dumps(event))
     # Process the new record logic here
     return {

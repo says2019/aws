@@ -5,7 +5,7 @@ dynamodb = boto3.resource('dynamodb')
 table = dynamodb.Table('RequestStatusTable')
 
 
-def lambda_handler(event, context):
+def handler(event, context):
     request_id = event['request_id']
     status = event['status']
 
