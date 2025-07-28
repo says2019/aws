@@ -31,6 +31,7 @@ data "aws_iam_policy_document" "lambda_assume" {
 
 # Upload zip file to S3
 resource "aws_s3_object" "lambda_zip" {
+  for_each = toset(var.lambda_names)
   bucket = aws_s3_bucket.cqpocsbucket.id
   key    = "notify-new-record.zip"
   source = data.archive_file.init.output_path
@@ -51,7 +52,7 @@ resource "aws_lambda_function" "lambda_functions" {
   depends_on = [aws_s3_object.lambda_zip]
 }
 
-# Output
-output "pythonLambdaArn" {
-  value = aws_lambda_function.lambda_functions.arn
-}
+# # Output
+# output "pythonLambdaArn" {
+#   value = aws_lambda_function.lambda_functions.arn
+# }

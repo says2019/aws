@@ -1,27 +1,24 @@
 variable "pythonfunctionapparn" {
-  description = "ARN of the Lambda function to be used in Step Function"
-  type        = string
+  type = map(string)
 }
 
 # Step Function Role
 resource "aws_iam_role" "step_function_role" {
   name = "step-function-role"
 
-  assume_role_policy = <<-EOF
-  {
-    "Version": "2012-10-17",
-    "Statement": [
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
       {
-        "Action": "sts:AssumeRole",
-        "Principal": {
-          "Service": "states.amazonaws.com"
+        Action = "sts:AssumeRole",
+        Principal = {
+          Service = "states.amazonaws.com"
         },
-        "Effect": "Allow",
-        "Sid": "StepFunctionAssumeRole"
+        Effect = "Allow",
+        Sid = "StepFunctionAssumeRole"
       }
     ]
-  }
-  EOF
+  })
 }
 
 # Step Function IAM Policy
@@ -29,44 +26,91 @@ resource "aws_iam_role_policy" "step_function_policy" {
   name = "step-function-policy"
   role = aws_iam_role.step_function_role.id
 
-  policy = <<-EOF
-  {
-    "Version": "2012-10-17",
-    "Statement": [
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
       {
-        "Effect": "Allow",
-        "Action": [
+        Effect = "Allow",
+        Action = [
           "lambda:InvokeFunction"
         ],
-        "Resource": "${var.pythonfunctionapparn}"
+        Resource = [
+          var.pythonfunctionapparn["notify_new_record"],
+          var.pythonfunctionapparn["return_task_token"],
+          var.pythonfunctionapparn["purchase_capacity_block"],
+          var.pythonfunctionapparn["set_request_status"],
+          var.pythonfunctionapparn["submit_approval_request"]
+        ]
       }
     ]
-  }
-  EOF
+  })
 }
 
 # Step Function Definition
 resource "aws_sfn_state_machine" "sfn_state_machine" {
-  name     = "work_flow"
+  name     = "approval-flow"
   role_arn = aws_iam_role.step_function_role.arn
 
-  definition = <<-EOF
-  {
-    "Comment": "Invoke AWS Lambda from Step Function with Terraform",
-    "StartAt": "ExampleLambdaFunctionApp",
-    "States": {
-      "ExampleLambdaFunctionApp": {
-        "Type": "Task",
-        "Resource": "arn:aws:states:::lambda:invoke",
-        "Parameters": {
-          "FunctionName": "${var.pythonfunctionapparn}",
-          "Payload": {
-            "input.$": "$"
+  definition = jsonencode({
+    Comment = "Approval Workflow using Lambda and Task Token",
+    StartAt = "NotifyNewRecord",
+    States = {
+      NotifyNewRecord = {
+        Type = "Task",
+        Resource = "arn:aws:states:::lambda:invoke",
+        Parameters = {
+          FunctionName = var.pythonfunctionapparn["notify_new_record"],
+          Payload = {
+            "input.$" = "$"
           }
         },
-        "End": true
+        Next = "WaitForApproval"
+      },
+      WaitForApproval = {
+        Type = "Task",
+        Resource = "arn:aws:states:::lambda:invoke.waitForTaskToken",
+        Parameters = {
+          FunctionName = var.pythonfunctionapparn["return_task_token"],
+          Payload = {
+            "token.$" = "$$.Task.Token",
+            "input.$" = "$"
+          }
+        },
+        Next = "PurchaseCapacityBlock"
+      },
+      PurchaseCapacityBlock = {
+        Type = "Task",
+        Resource = "arn:aws:states:::lambda:invoke",
+        Parameters = {
+          FunctionName = var.pythonfunctionapparn["purchase_capacity_block"],
+          Payload = {
+            "input.$" = "$"
+          }
+        },
+        Next = "SetRequestStatus"
+      },
+      SetRequestStatus = {
+        Type = "Task",
+        Resource = "arn:aws:states:::lambda:invoke",
+        Parameters = {
+          FunctionName = var.pythonfunctionapparn["set_request_status"],
+          Payload = {
+            "input.$" = "$"
+          }
+        },
+        Next = "SubmitApprovalRequest"
+      },
+      SubmitApprovalRequest = {
+        Type = "Task",
+        Resource = "arn:aws:states:::lambda:invoke",
+        Parameters = {
+          FunctionName = var.pythonfunctionapparn["submit_approval_request"],
+          Payload = {
+            "input.$" = "$"
+          }
+        },
+        End = true
       }
     }
-  }
-  EOF
+  })
 }
