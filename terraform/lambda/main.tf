@@ -44,7 +44,7 @@ resource "aws_lambda_function" "lambda_functions" {
   function_name    = each.key
   s3_bucket        = aws_s3_bucket.cqpocsbucket.id
   s3_key           = aws_s3_object.lambda_zip.key
-  role             = aws_iam_role.lambda_role.arn
+  role             = aws_iam_role.lambda_exec_role.arn
   handler          = "${replace(each.key, "_", "-")}.handler"
   runtime          = "python3.8"
   source_code_hash = data.archive_file.init.output_base64sha256
