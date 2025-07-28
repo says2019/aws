@@ -7,7 +7,7 @@ data "archive_file" "init" {
 
 # S3 Bucket
 resource "aws_s3_bucket" "cqpocsbucket" {
-  bucket = "quickcloudpocsbucket001"
+  bucket = "test_stepfunctions"
   force_destroy = true  # optional: allows deletion even if non-empty
   tags = {
     Name = "cqpocsbucket-1"

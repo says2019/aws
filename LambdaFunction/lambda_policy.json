@@ -4,7 +4,12 @@
    "Statement": [
      {
        "Sid": "Stmt163546087325",
-       "Action": "logs",
+        "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents"
+      ],
+
        "Effect": "Allow",
        "Resource": "*"
      }
