@@ -1,6 +1,6 @@
   terraform{
     # Terraform version at the time of writing this post
-    required_version = ">= 0.12.24"
+    required_version = ">= 1.8.5"
 
     backend "s3"{
         bucket = "cloudquickpocsbackendtf"
@@ -13,9 +13,9 @@
 
 #   provider "random" {}
 
-  provider "aws"{
-      region = "us-east-1"
-  }
+#   provider "aws"{
+#       region = "us-east-1"
+#   }
 
   #Create Aws Python lambda function
   module "awslambdafunction"{
