@@ -25,6 +25,6 @@
 
   #Create aws stepfunction to Inovke aws Lambda function
   module "awsstepfunction"{
-   source =  "./stepfunction"
+   source =  "./StepFunction"
    pythonfunctionapparn = module.awslambdafunction.pythonlambdaArn
   }
