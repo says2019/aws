@@ -2,11 +2,11 @@
     # Terraform version at the time of writing this post
     required_version = ">= 1.8.5"
 
-    backend "s3"{
-        bucket = "cloudquickpocsbackendtf"
-        key = "quickcloudpocsbackend.tfstate"
-        region = "us-east-1"
-    }
+#     backend "s3"{
+#         bucket = "cloudquickpocsbackendtf"
+#         key = "quickcloudpocsbackend.tfstate"
+#         region = "us-east-1"
+#     }
 
   }
 
