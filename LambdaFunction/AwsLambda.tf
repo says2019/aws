@@ -7,7 +7,7 @@ data "archive_file" "init" {
 
 # S3 Bucket
 resource "aws_s3_bucket" "cqpocsbucket" {
-  bucket = "mystepfunctionbucket001"
+  bucket = "mystepfunctionbucket002"
   force_destroy = true  # optional: allows deletion even if non-empty
   tags = {
     Name = "cqpocsbucket-1"
@@ -48,7 +48,7 @@ resource "aws_iam_role_policy" "lambda_policy" {
 resource "aws_lambda_function" "test_lambda" {
   function_name    = "notify_new_record"
   s3_bucket        = aws_s3_bucket.cqpocsbucket.id
-  s3_key           = aws_s3_object.lambda_zip.id
+  s3_key           = aws_s3_object.lambda_zip.key
   role             = aws_iam_role.lambda_role.arn
   handler          = "notify-new-record.handler"
   runtime          = "python3.8"
