@@ -5,7 +5,7 @@
     backend "s3"{
         bucket = "cloudquickpocsbackendtf"
         key = "quickcloudpocsbackend.tfstate"
-        region = "ap-south-1"
+        region = "us-east-1"
     }
 
   }
@@ -14,7 +14,7 @@
 #   provider "random" {}
 
   provider "aws"{
-      region = "ap-south-1"
+      region = "us-east-1"
   }
 
   #Create Aws Python lambda function
