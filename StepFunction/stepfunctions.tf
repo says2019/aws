@@ -28,7 +28,7 @@ resource "aws_iam_role_policy" "step_fucntion_policy"{
    name   = "cqcdstepfunctionrole-assume_role_policy"
    role   = aws_iam_role.step_function_role.id
 
-   policy = <<- EOF
+   policy = <<-EOF
    {
      "Version": "2012-10-17",
      "Statement":[
@@ -50,7 +50,7 @@ resource "aws_sfn_state_machine" "sfn_state_machine"{
    name   = "cloudquickpocsstepfunction"
    role_arn = aws_iam_role.step_function_role.arn
 
-   definition = <<EOF
+   definition = <<-EOF
    {
       "Comment": "Invoke aws Lambda from aws Step Function with Terrafrom",
        "StartAt": "ExampleLambdaFunctionApp",
