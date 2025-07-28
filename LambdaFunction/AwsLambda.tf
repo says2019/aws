@@ -23,6 +23,7 @@ resource "aws_s3_object" "lambda_zip" {
   source = data.archive_file.init.output_path
   etag   = filemd5(data.archive_file.init.output_path)
   content_type = "application/zip"
+
 }
 
 
@@ -52,6 +53,7 @@ resource "aws_lambda_function" "test_lambda" {
   handler          = "notify-new-record.handler"
   runtime          = "python3.8"
   source_code_hash = data.archive_file.init.output_base64sha256
+  depends_on = [aws_s3_object.lambda_zip]
 }
 
 
