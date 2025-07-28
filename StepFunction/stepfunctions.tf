@@ -38,6 +38,7 @@ resource "aws_iam_role_policy" "step_function_policy" {
           var.pythonfunctionapparn["notify_new_record"],
           var.pythonfunctionapparn["return_task_token"],
           var.pythonfunctionapparn["purchase_capacity_block"],
+          var.pythonfunctionapparn["send_approval_email"],
           var.pythonfunctionapparn["set_request_status"],
           var.pythonfunctionapparn["submit_approval_request"]
         ]
@@ -87,7 +88,18 @@ resource "aws_sfn_state_machine" "sfn_state_machine" {
             "input.$" = "$"
           }
         },
-        Next = "SetRequestStatus"
+        Next = "SendApprovalEmail"
+      },
+      SendApprovalEmail = {
+        Type = "Task",
+        Resource = "arn:aws:states:::lambda:invoke",
+        Parameters = {
+          FunctionName = var.pythonfunctionapparn["set_request_status"],
+          Payload = {
+            "input.$" = "$"
+          }
+        },
+        Next = "SubmitApprovalRequest"
       },
       SetRequestStatus = {
         Type = "Task",
