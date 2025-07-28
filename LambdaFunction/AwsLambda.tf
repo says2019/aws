@@ -46,7 +46,7 @@ resource "aws_iam_role_policy" "lambda_policy" {
 }
 
 # Lambda Function
-resource "aws_lambda_function" "functions" {
+resource "aws_lambda_function" "work_flow" {
   for_each = var.lambda_configs
 
   function_name    = each.key
@@ -64,5 +64,5 @@ resource "aws_lambda_function" "functions" {
 
 # Output
 output "pythonLambdaArn" {
-  value = { for k, v in aws_lambda_function.test_lambda : k => v.arn }
+  value = { for k, v in aws_lambda_function.work_flow : k => v.arn }
 }
