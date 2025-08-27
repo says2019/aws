@@ -37,17 +37,8 @@ jobs:
       id: init
       run: terraform init -backend-config=backend.conf
 
-    - name: Terraform Plan
-      id: plan
-      if: github.event_name == 'push'
-      run: terraform plan -no-color
-      continue-on-error: true
-
-    - name : Terraform destory
-      id : destory
+    - name: Terraform Destroy
+      run: terraform destroy -auto-approve
 
 
-    - name: Terraform Apply
-#      if: github.ref == 'refs/heads/dev" && github.event_name == 'push'
-      run: terraform apply -auto-approve
 

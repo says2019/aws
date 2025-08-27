@@ -49,20 +49,20 @@ output "role_name" {
 
 
 
-#   provider "random" {}
-#
-#   provider "aws"{
-#       region = "us-east-1"
-#   }
-#
-#   #Create Aws Python lambda function
-#   module "awslambdafunction"{
-#     source = "./LambdaFunction"
-#   }
-#
-#
-#   #Create aws stepfunction to Inovke aws Lambda function
-#   module "awsstepfunction"{
-#    source =  "./StepFunction"
-#    pythonfunctionapparn = module.awslambdafunction.pythonLambdaArn
+  provider "random" {}
+
+  provider "aws"{
+      region = "us-east-1"
+  }
+
+  #Create Aws Python lambda function
+  module "awslambdafunction"{
+    source = "./LambdaFunction"
+  }
+
+
+  #Create aws stepfunction to Inovke aws Lambda function
+  module "awsstepfunction"{
+   source =  "./StepFunction"
+   pythonfunctionapparn = module.awslambdafunction.pythonLambdaArn
 #   }
