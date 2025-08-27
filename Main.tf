@@ -49,11 +49,6 @@ output "role_name" {
 
 
 
-  provider "random" {}
-
-  provider "aws"{
-      region = "us-east-1"
-  }
 
   #Create Aws Python lambda function
   module "awslambdafunction"{
