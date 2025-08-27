@@ -50,7 +50,7 @@ output "role_name" {
 
 
 
-  #Create Aws Python lambda functions
+  #Create Aws Python lambda function
   module "awslambdafunction"{
     source = "./LambdaFunction"
   }
