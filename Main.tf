@@ -1,10 +1,10 @@
 terraform {
   backend "s3" {
-    bucket         = "my-terraform-states"
-    key            = "iam/role/terraform.tfstate"
-    region         = "us-east-1"
-    dynamodb_table = "terraform-locks"
-    encrypt        = true
+#     bucket         = "my-terraform-states"
+#     key            = "iam/role/terraform.tfstate"
+#     region         = "us-east-1"
+#     dynamodb_table = "terraform-locks"
+#     encrypt        = true
   }
 
   required_providers {
@@ -16,7 +16,7 @@ terraform {
 }
 
 provider "aws" {
-  region = "ap-south-1"
+  region = "us-east-1"
 }
 
 # IAM Role
