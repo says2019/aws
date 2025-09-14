@@ -3,7 +3,7 @@ import boto3
 
 stepfunctions = boto3.client('stepfunctions')
 
-def lambda_handler(event, context):
+def handler(event, context):
     task_token = event['taskToken']
     output = {
         "result": "approved"

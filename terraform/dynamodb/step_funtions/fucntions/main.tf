@@ -12,7 +12,7 @@ resource "aws_iam_role" "step_function_role" {
     }]
   })
 }
-
+#test
 resource "aws_iam_role_policy" "step_function_policy" {
   role = aws_iam_role.step_function_role.id
 
